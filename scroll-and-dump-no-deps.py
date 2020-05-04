@@ -18,7 +18,7 @@ def scroll_and_dump():
 
     top_level_url = f'{ES_HOST}'
 
-    # create a password manager and add username nad password
+    # create a password manager and add username and password
     password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
     password_mgr.add_password(None, top_level_url, ES_USER, ES_PASSWORD)
     handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
