@@ -37,13 +37,12 @@ def scroll_and_dump():
     req = urllib.request.Request(url, request_body, headers)
     response = opener.open(req)
     data = json.loads(response.read().decode("utf-8"))
+    
+    # Get the scroll ID
+    sid = data['_scroll_id']
+    scroll_size = len(data['hits']['hits'])
 
     with open(OUT_FILE, 'w') as out_file:
-
-        # Get the scroll ID
-        sid = data['_scroll_id']
-        scroll_size = len(data['hits']['hits'])
-
         # Before scroll, process current batch of hits
         dump_hits(data['hits']['hits'], out_file)
 
