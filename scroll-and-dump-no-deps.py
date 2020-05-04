@@ -18,19 +18,13 @@ def scroll_and_dump():
 
     top_level_url = f'{ES_HOST}'
 
-    # create a password manager
+    # create a password manager and add username nad password
     password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-
-    # Add the username and password.
     password_mgr.add_password(None, top_level_url, ES_USER, ES_PASSWORD)
     handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
 
     # create "opener" (OpenerDirector instance)
     opener = urllib.request.build_opener(handler)
-
-    # Install the opener.
-    # Now all calls to urllib.request.urlopen use our opener.
-    urllib.request.install_opener(opener)
 
     headers = {
         "Content-Type": "application/json",
@@ -41,7 +35,7 @@ def scroll_and_dump():
 
     url = f'{ES_HOST}/{INDEX_TO_DUMP}/_search?scroll=1m'
     req = urllib.request.Request(url, request_body, headers)
-    response = urllib.request.urlopen(req)
+    response = opener.open(req)
     data = json.loads(response.read().decode("utf-8"))
 
     with open(OUT_FILE, 'w') as out_file:
@@ -63,7 +57,7 @@ def scroll_and_dump():
 
             url = f'{ES_HOST}/_search/scroll'
             req = urllib.request.Request(url, request_body, headers)
-            response = urllib.request.urlopen(req)
+            response = opener.open(req)
             data = json.loads(response.read().decode("utf-8"))
 
             # Process current batch of hits
