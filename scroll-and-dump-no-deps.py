@@ -1,5 +1,4 @@
 #!/usr/local/bin/python3
-import base64
 import json
 import urllib.request
 
@@ -17,7 +16,6 @@ def dump_hits(hits, out_file):
 
 def scroll_and_dump():
 
-    match_all_query = '{"query": {"match_all": {}}}'.encode("utf-8")
     top_level_url = f'{ES_HOST}'
 
     # create a password manager
@@ -39,8 +37,10 @@ def scroll_and_dump():
         "Accept": "application/json",
     }
 
+    request_body = '{"query": {"match_all": {}}}'.encode("utf-8")
+
     url = f'{ES_HOST}/{INDEX_TO_DUMP}/_search?scroll=1m'
-    req = urllib.request.Request(url, match_all_query, headers)
+    req = urllib.request.Request(url, request_body, headers)
     response = urllib.request.urlopen(req)
     data = json.loads(response.read().decode("utf-8"))
 
@@ -55,14 +55,14 @@ def scroll_and_dump():
 
         while scroll_size > 0:
 
-            scroll_body_json = {
+            scroll_json = {
                 "scroll": "1m",
                 "scroll_id": sid
             }
-            scroll_body = json.dumps(scroll_body_json).encode("utf-8")
+            request_body = json.dumps(scroll_json).encode("utf-8")
 
             url = f'{ES_HOST}/_search/scroll'
-            req = urllib.request.Request(url, scroll_body, headers)
+            req = urllib.request.Request(url, request_body, headers)
             response = urllib.request.urlopen(req)
             data = json.loads(response.read().decode("utf-8"))
 
